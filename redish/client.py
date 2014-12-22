@@ -30,13 +30,32 @@ class Client(object):
     serializer = Pickler()
     #serializer = anyjson
 
-    def __init__(self, host=None, port=None, db=None,
-            serializer=None, **kwargs):
-        self.host = host or self.host
-        self.port = port or self.port
-        self.serializer = serializer or self.serializer
-        self.db = db or self.db
-        self.api = _RedisClient(self.host, self.port, self.db, **kwargs)
+    def __init__(self, **kwargs):
+        """Redis Client
+        :keyword connection_pool: The connection poll.
+        or
+        :keyword host: Hostname of the Redis server to connect to.
+            Default is ``"localhost"``.
+        :keyword port: Port of the server to connect to.
+            Default is ``6379``.
+        :keyword db: Name of the database to use.
+            Default is to use the default database.
+        :keyword serializer: Object used to serialize/deserialize values.
+            Must support the methods ``serialize(value)`` and
+            ``deserialize(value)``. The default is to use
+            :class:`redish.serialization.Pickler`.
+
+        """
+
+        if 'connection_pool' in kwargs:
+            self.api = _RedisClient(connection_pool=kwargs['connection_pool'])
+        else:
+            self.host = kwargs.get('host', "127.0.0.1")
+            self.port = kwargs.get('port', DEFAULT_PORT)
+            self.db = kwargs.get('db', None)
+            self.serializer = kwargs.get('serializer', Pickler())
+
+            self.api = _RedisClient(self.host, self.port, self.db, **kwargs)
 
     def id(self, name):
         """Return the next id for a name."""

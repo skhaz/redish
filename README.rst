@@ -19,6 +19,14 @@ A connection to a database is represented by the ``redish.client.Client`` class:
     >>> db
     <RedisClient: localhost:6379/>
 
+Or using a connection pool:
+
+    >>> import redis
+    >>> pool = redis.ConnectionPool(host="127.0.0.1", port=6379)
+    >>> db = Client(connection_pool=pool)
+    >>> db
+
+
 Serializers
 ===========
 
@@ -555,7 +563,7 @@ product of operations on the underlying store::
     >>> len(r['newlist'])
     2
 
-Finally, you may structure key names into arbitrary "keyspaces" 
+Finally, you may structure key names into arbitrary "keyspaces"
 denoted by format strings::
 
     >>> name = r.keyspace['user:%04d:name']
